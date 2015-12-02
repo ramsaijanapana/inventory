@@ -1,0 +1,139 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page import="java.util.*, org.inventory.dao.*, org.inventory.jdo.*"%>
+
+<jsp:useBean id="userProfile" class="org.inventory.jdo.User"
+	scope="request" />
+<jsp:setProperty property="*" name="userProfile" />
+
+<%
+	String userName = (String) session.getAttribute("username");
+	User uProf = UserDao.getUserProfile(userName);
+%>
+
+<html>
+<jsp:include page="Header.jsp">
+	<jsp:param value="test" name="test" />
+</jsp:include>
+<body class="bg-steel">
+	<div style="width: 100%; margin: 0 auto;">
+		<jsp:include page="Menus.jsp">
+			<jsp:param value="test" name="test" />
+		</jsp:include>
+		<%
+			String action = request.getParameter("action");
+			if (action == null)
+			{
+		%>
+		<div class="page-content">
+			<div class="flex-grid no-responsive-future">
+				<div class="row" style="height: 100%">
+					<div class="cell auto-size padding20 bg-white" id="cell-content">
+						<h3 class="text-light">Update Profile</h3>
+						<hr class="thin bg-grayLighter">
+						<div style="padding-left: 200px;">
+<form method="post" action="./ProfileEdit.jsp"
+	data-role="validator">
+	<input type="hidden" name="action" id="action" value="save" />
+	<table style="width: 60%;">
+		<tbody>
+			<tr>
+				<td>First Name</td>
+				<td>
+					<div class="input-control text" style="height: 30px;">
+						<input type="text" name="firstName" id="firstName"
+							style="width: 150px; height: 30px;"
+							title="This field must contains min 4 characters."
+							data-validate-func="minlength" data-validate-arg="4"
+							data-validate-hint="This field must contains min 4 characters."
+							value="<%=((uProf != null && uProf.getFirstName() != null)?uProf.getFirstName():"")%>">
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>Middle Name</td>
+				<td style="height: 30px; width: 150px;">
+					<div class="input-control text" style="height: 30px;">
+						<input type="text" name="middleName" id="middleName"
+							style="width: 150px; height: 30px;"
+							value="<%=((uProf != null && uProf.getMiddleName() != null)?uProf.getMiddleName():"")%>"
+						>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>Last Name</td>
+				<td>
+					<div class="input-control text" style="height: 30px;">
+						<input type="text" name="lastName" id="lastName"
+							style="width: 150px; height: 30px;"
+							title="This field must contains min 4 characters."
+							data-validate-func="minlength" data-validate-arg="4"
+							data-validate-hint="This field must contains min 4 characters."
+							value="<%=((uProf != null && uProf.getLastName() != null)?uProf.getLastName():"")%>"
+						>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>EMail Id</td>
+				<td>
+					<div class="input-control text" style="height: 30px;">
+						<input type="text" name="email" id="email"
+							style="width: 150px; height: 30px;"
+							title="This field must contains min 6 characters."
+							data-validate-func="minlength" data-validate-arg="6"
+							data-validate-hint="This field must contains min 6 characters."
+							value="<%=((uProf != null && uProf.getEmail() != null)?uProf.getEmail():"")%>"
+						>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div style="padding-left: 25%;">
+		<button class="button primary">Submit</button>
+	</div>
+</form>
+						</div>
+						<br> <br>
+					</div>
+				</div>
+			</div>
+		</div>
+		<%
+			}
+			else
+			{
+				String statusMessage = "Profile Information updated successfully.";
+				String firstName = userProfile.getFirstName();
+				String middleName = userProfile.getMiddleName();
+				String lastName = userProfile.getLastName();
+				String emailId = userProfile.getEmail();
+				//String userName = (String) session.getAttribute("username");
+				boolean status = UserDao.updateUser(firstName, middleName,
+						lastName, emailId, userName);
+				if (status == false)
+				{
+					statusMessage = "Error updating profile info; ";
+					statusMessage += "Please contact System Admin or try again later.";
+				}
+		%>
+		<div class="page-content">
+			<div class="flex-grid no-responsive-future" style="height: 100%;">
+				<div class="row" style="height: 100%">
+					<div class="cell auto-size padding20 bg-white" id="cell-content">
+						<h3 class="text-light">
+							<%=statusMessage%>
+						</h3>
+						<hr class="thin bg-grayLighter">
+					</div>
+				</div>
+			</div>
+		</div>
+		<%
+			}
+		%>
+	</div>
+</body>
+</html>
