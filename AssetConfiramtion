@@ -1,0 +1,81 @@
+<%@ page import="java.util.*, org.inventory.dao.*, org.inventory.jdo.*"%>
+
+<html>
+<jsp:include page="Header.jsp">
+	<jsp:param value="test" name="test" />
+</jsp:include>
+<script type="text/javascript">
+	
+<%String userType = (String)session.getAttribute("usertype");%>
+	
+</script>
+<body class="bg-steel">
+	<div>
+		<jsp:include page="Menus.jsp">
+			<jsp:param value="test" name="test" />
+		</jsp:include>
+
+		<div class="page-content">
+			<div class="flex-grid no-responsive-future" style="height: 100%;">
+				<div class="row" style="height: 100%">
+					<div class="cell auto-size padding20 bg-white" id="cell-content">
+						<h3 class="text-light">Asset Confirmation</h3>
+						<hr class="thin bg-grayLighter">
+						<br>
+						<%
+							if ("HOD".equalsIgnoreCase(userType))
+							{
+								List<AssetRequest> asstReqList = AssetRequestDao.getAssetRequests(1, null);
+								out.println("<table style=\"width: 60%;\">");
+								for (AssetRequest aReq : asstReqList)
+								{
+									if (aReq.getStatus() == 1)
+									{
+										Asset ast = AssetsDao.getAssetBySerialNo(aReq
+												.getRequestFor());
+										out.println("<tr><td>Asset Name ("
+												+ ast.getAssetName() + ")</td>");
+										out.println("<td>Requested By ("
+												+ aReq.getUserName() + ")</td>");
+										out.println("<td width=\"5%\"></td><td> <a href=\"./ReviewCustodyCordForm.jsp?requestid="
+												+ aReq.getRequestId() + "\">"
+												+ "Review Custody Cord Form </a></td></tr>");
+										out.println("<tr><td colspan=\"2\" style=\"height:10px;\"></td></tr>");
+									}
+								}
+								out.println("</table>");
+							}
+							else
+							{
+								String userName = (String) session.getAttribute("username");
+								System.out.println("AssetConfirmation.jsp :: userName = "
+										+ userName);
+								List<AssetRequest> asstReqList = AssetRequestDao
+										.getAssetRequests(userName);
+								for (AssetRequest aReq : asstReqList)
+								{
+									if (aReq.getStatus() == 0)
+									{
+										Asset ast = AssetsDao.getAssetBySerialNo(aReq
+												.getRequestFor());
+										out.println("Asset Name ("
+												+ ast.getAssetName()
+												+ ") -- <a href=\"./CustodyCordForm.jsp?requestid="
+												+ aReq.getRequestId() + "\">"
+												+ "Submit Custody Cord Form </a><br>");
+									}
+								}
+							}
+						%>
+						<br>
+						<div id="assetReuestsDiv" style="background-color: yellow;">
+						</div>
+						<br> <br> <br> <br>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
